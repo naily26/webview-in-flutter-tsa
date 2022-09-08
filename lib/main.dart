@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:io';                            // Add this import.
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'src/web_view_stack.dart';
+import 'src/navigation_controls.dart';
 
 void main() {
   runApp(
@@ -18,25 +21,18 @@ class WebViewApp extends StatefulWidget {
 }
 
 class _WebViewAppState extends State<WebViewApp> {
-  // Add from here ...
-  @override
-  void initState() {
-    if (Platform.isAndroid) {
-      WebView.platform = SurfaceAndroidWebView();
-    }
-    super.initState();
-  }
-  // ... to here.
-
+  final controller = Completer<WebViewController>();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter WebView'),
+        actions: [
+          NavigationControls(controller: controller)
+        ],
       ),
-      body: const WebView(
-        initialUrl: 'https://flutter.dev',
-      ),
+      body:WebViewStack(controller: controller)
     );
   }
 }
