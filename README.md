@@ -22,3 +22,7 @@ A new Flutter project.
 ![screenshoot webview_tsa](images/output_5_clear.png)
 ![screenshoot webview_tsa](images/output_5_ip.png)
 ![screenshoot webview_tsa](images/output_5_set.png)
+
+### Memuat aset, file, dan string HTML Flutter di WebView
+![screenshoot webview_tsa](images/output_6.png)
+![screenshoot webview_tsa](images/output_6_string.png)

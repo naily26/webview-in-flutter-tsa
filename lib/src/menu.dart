@@ -1,6 +1,27 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+
+const String kExamplePage = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Load file or HTML string example</title>
+</head>
+<body>
+
+<h1>Local demo page</h1>
+<p>
+ This is an example page used to demonstrate how to load a local file or HTML
+ string using the <a href="https://pub.dev/packages/webview_flutter">Flutter
+ webview</a> plugin.
+</p>
+
+</body>
+</html>
+''';
 
 enum _MenuOptions {
   navigationDelegate,
@@ -11,6 +32,9 @@ enum _MenuOptions {
   addCookie,
   setCookie,
   removeCookie, 
+  loadFlutterAsset,
+  loadLocalFile,
+  loadHtmlString,
 }
 
 class Menu extends StatefulWidget {
@@ -73,6 +97,15 @@ class _MenuState extends State<Menu> {
               case _MenuOptions.removeCookie:
                 await _onRemoveCookie(controller.data!);
                 break;
+              case _MenuOptions.loadFlutterAsset:
+               _onLoadFlutterAssetExample(controller.data!, context);
+               break;
+             case _MenuOptions.loadLocalFile:
+               _onLoadLocalFileExample(controller.data!, context);
+               break;
+             case _MenuOptions.loadHtmlString:
+               _onLoadHtmlStringExample(controller.data!, context);
+               break;
             }
           },
           itemBuilder: (context) => [
@@ -108,6 +141,18 @@ class _MenuState extends State<Menu> {
               value: _MenuOptions.removeCookie,
               child: Text('Remove cookie'),
             ),
+            const PopupMenuItem<_MenuOptions>(
+             value: _MenuOptions.loadFlutterAsset,
+             child: Text('Load Flutter Asset'),
+           ),
+           const PopupMenuItem<_MenuOptions>(
+             value: _MenuOptions.loadHtmlString,
+             child: Text('Load HTML string'),
+           ),
+           const PopupMenuItem<_MenuOptions>(
+             value: _MenuOptions.loadLocalFile,
+             child: Text('Load local file'),
+           ),
           ],
         );
       },
@@ -170,4 +215,32 @@ class _MenuState extends State<Menu> {
       ),
     );
   }
+
+  Future<void> _onLoadFlutterAssetExample(
+    WebViewController controller, BuildContext context) async {
+  await controller.loadFlutterAsset('assets/www/index.html');
+  }
+
+  Future<void> _onLoadLocalFileExample(
+   WebViewController controller, BuildContext context) async {
+    final String pathToIndex = await _prepareLocalFile();
+
+    await controller.loadFile(pathToIndex);
+    }
+
+    static Future<String> _prepareLocalFile() async {
+    final String tmpDir = (await getTemporaryDirectory()).path;
+    final File indexFile = File('$tmpDir/www/index.html');
+
+    await Directory('$tmpDir/www').create(recursive: true);
+    await indexFile.writeAsString(kExamplePage);
+
+    return indexFile.path;
+  }
+
+  Future<void> _onLoadHtmlStringExample(
+    WebViewController controller, BuildContext context) async {
+  await controller.loadHtmlString(kExamplePage);
+  }
+
 }
